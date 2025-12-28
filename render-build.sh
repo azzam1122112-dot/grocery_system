@@ -5,7 +5,7 @@ set -o errexit
 pip install -r requirements.txt
 
 # Collect static files for Django admin + app
-python manage.py collectstatic --noinput
+python3 manage.py collectstatic --noinput
 
 # Apply migrations
-python manage.py migrate --noinput
+python3 manage.py migrate --noinput
