@@ -368,13 +368,34 @@
         /* Mobile Optimizations */
         @media (max-width: 640px) {
             .header {
-                padding: 0.75rem 1rem;
+                padding: 0.75rem 0.75rem;
+                flex-wrap: wrap;
+                gap: 0.5rem;
             }
-            .brand span { display: none; } /* Hide text, keep icon */
-            .nav-actions span { display: none; } /* Hide text, keep icons */
+            .brand span {
+                display: inline;
+                font-size: 1rem;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                max-width: 10rem;
+            }
+            .nav-actions {
+                width: 100%;
+                justify-content: flex-start;
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+                padding-bottom: 0.25rem;
+            }
+            .btn-nav {
+                flex: 0 0 auto;
+                min-height: 44px;
+                padding: 0.5rem 0.75rem;
+            }
+            .btn-nav span:last-child { display: none; } /* Hide label, keep icon */
             
             .form-row {
-                grid-template-columns: 1fr 80px auto;
+                grid-template-columns: minmax(0, 1fr) 90px 48px;
             }
             
             .cart-table th:nth-child(1), /* # */

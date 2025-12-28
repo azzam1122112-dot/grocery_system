@@ -295,8 +295,10 @@
             .header {
                 padding: 0.75rem 1rem;
             }
-            .brand span { display: none; }
-            .nav-actions span { display: none; }
+            .brand span { display: inline; font-size: 1rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 10rem; }
+            .nav-actions { width: 100%; justify-content: flex-start; overflow-x: auto; -webkit-overflow-scrolling: touch; padding-bottom: 0.25rem; }
+            .btn-nav { flex: 0 0 auto; min-height: 44px; padding: 0.5rem 0.75rem; }
+            .btn-nav span:last-child { display: none; }
             
             .metrics-grid {
                 grid-template-columns: 1fr;
