@@ -1,0 +1,435 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>إدارة الديون - البقالة</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary: #10b981;
+            --primary-dark: #059669;
+            --primary-light: #d1fae5;
+            --secondary: #64748b;
+            --bg-body: #f1f5f9;
+            --bg-card: #ffffff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --info: #3b82f6;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            --radius: 0.75rem;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Cairo', sans-serif;
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            line-height: 1.5;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header */
+        .header {
+            background: var(--bg-card);
+            border-bottom: 1px solid var(--border);
+            padding: 0.75rem 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 800;
+            font-size: 1.25rem;
+            color: var(--primary-dark);
+        }
+
+        .brand-icon {
+            background: var(--primary-light);
+            color: var(--primary-dark);
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            font-size: 1.2rem;
+        }
+
+        .nav-actions {
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        .btn-nav {
+            text-decoration: none;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            background: #f8fafc;
+            border: 1px solid var(--border);
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .btn-nav:hover {
+            background: #e2e8f0;
+            color: var(--text-main);
+        }
+
+        .btn-nav.active {
+            background: var(--primary-light);
+            color: var(--primary-dark);
+            border-color: var(--primary-light);
+        }
+
+        /* Main Layout */
+        .main-container {
+            flex: 1;
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+            padding: 1.5rem;
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+        }
+
+        /* Metrics Grid */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1rem;
+        }
+
+        .metric-card {
+            background: var(--bg-card);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .metric-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 4px;
+            height: 100%;
+        }
+
+        .metric-card.debt::after { background: var(--danger); }
+        .metric-card.paid::after { background: var(--primary); }
+
+        .metric-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+
+        .metric-label {
+            font-size: 1rem;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        .metric-icon {
+            font-size: 1.5rem;
+            opacity: 0.8;
+        }
+
+        .metric-value {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--text-main);
+        }
+
+        .metric-unit {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-muted);
+        }
+
+        /* Table Card */
+        .card {
+            background: var(--bg-card);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-md);
+            border: 1px solid var(--border);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card-header {
+            padding: 1rem 1.25rem;
+            border-bottom: 1px solid var(--border);
+            background: #f8fafc;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .card-title {
+            font-weight: 700;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .table-container {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.95rem;
+        }
+
+        th {
+            background: #f1f5f9;
+            padding: 1rem;
+            text-align: right;
+            font-weight: 600;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            white-space: nowrap;
+        }
+
+        td {
+            padding: 1rem;
+            border-bottom: 1px solid var(--border);
+            vertical-align: middle;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tr:hover td {
+            background-color: #f8fafc;
+        }
+
+        .badge-remaining {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.25rem 0.75rem;
+            border-radius: 999px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            background: #fee2e2;
+            color: #dc2626;
+        }
+
+        .btn-action {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.4rem 1rem;
+            background: var(--primary-light);
+            color: var(--primary-dark);
+            border-radius: 0.5rem;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+
+        .btn-action:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        .empty-state {
+            padding: 3rem;
+            text-align: center;
+            color: var(--text-muted);
+        }
+
+        .empty-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        /* Mobile Optimizations */
+        @media (max-width: 768px) {
+            .header {
+                padding: 0.75rem 1rem;
+            }
+            .brand span { display: none; }
+            .nav-actions span { display: none; }
+            
+            .metrics-grid {
+                grid-template-columns: 1fr;
+            }
+
+            th, td {
+                padding: 0.75rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="brand">
+            <div class="brand-icon">📒</div>
+            <span>إدارة الديون</span>
+        </div>
+        <nav class="nav-actions">
+            <a href="{% url 'store:pos' %}" class="btn-nav">
+                <span>🛒</span> <span>نقطة البيع</span>
+            </a>
+            {% if request.user.is_superuser %}
+            <a href="{% url 'store:dashboard' %}" class="btn-nav">
+                <span>📊</span> <span>لوحة التحكم</span>
+            </a>
+            <a href="{% url 'store:sales_list' %}" class="btn-nav">
+                <span>🧾</span> <span>الفواتير</span>
+            </a>
+            <a href="{% url 'store:inventory_list' %}" class="btn-nav">
+                <span>📦</span> <span>المخزون</span>
+            </a>
+            <a href="{% url 'store:employee_list' %}" class="btn-nav">
+                <span>👥</span> <span>الموظفين</span>
+            </a>
+            {% endif %}
+            <a href="{% url 'store:logout' %}" class="btn-nav" style="color: #ef4444; border-color: #fee2e2; background: #fef2f2;">
+                <span>🚪</span> <span>خروج</span>
+            </a>
+        </nav>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-container">
+        
+        <!-- Metrics -->
+        <div class="metrics-grid">
+            <!-- Outstanding Debt -->
+            <div class="metric-card debt">
+                <div class="metric-header">
+                    <div class="metric-label">إجمالي الديون المتبقية</div>
+                    <div class="metric-icon">📉</div>
+                </div>
+                <div class="metric-value">
+                    {{ total_outstanding|default:"0" }} <span class="metric-unit">ريال</span>
+                </div>
+            </div>
+
+            <!-- Total Paid -->
+            <div class="metric-card paid">
+                <div class="metric-header">
+                    <div class="metric-label">إجمالي المبالغ المسددة</div>
+                    <div class="metric-icon">💰</div>
+                </div>
+                <div class="metric-value">
+                    {{ total_paid|default:"0" }} <span class="metric-unit">ريال</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Debtors List -->
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">👥 قائمة المديونين</div>
+                <div style="font-size: 0.9rem; color: var(--text-muted);">
+                    عدد العملاء: {{ debtors|length }}
+                </div>
+            </div>
+            
+            <div class="table-container">
+                {% if debtors %}
+                <table>
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>اسم العميل</th>
+                            <th>رقم الفاتورة</th>
+                            <th>إجمالي الدين</th>
+                            <th>المسدّد</th>
+                            <th>المتبقي</th>
+                            <th>إجراء</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for d in debtors %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td style="font-weight: 600;">{{ d.name }}</td>
+                            <td>
+                                {% if d.last_invoice_id %}
+                                <span style="font-family: monospace; background: #f1f5f9; padding: 2px 6px; border-radius: 4px;">#{{ d.last_invoice_id }}</span>
+                                {% else %}
+                                -
+                                {% endif %}
+                            </td>
+                            <td>{{ d.total_debt }} ريال</td>
+                            <td style="color: var(--primary-dark);">{{ d.total_paid }} ريال</td>
+                            <td>
+                                <span class="badge-remaining">
+                                    {{ d.remaining }} ريال
+                                </span>
+                            </td>
+                            <td>
+                                <a href="{% url 'store:debt_pay' d.id %}" class="btn-action">
+                                    <span>💸</span> سداد
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% else %}
+                <div class="empty-state">
+                    <div class="empty-icon">📝</div>
+                    <h3>لا توجد ديون مسجلة</h3>
+                    <p>عند تسجيل عملية بيع بطريقة الدفع "دين" سيظهر العملاء هنا.</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+    </main>
+
+</body>
+</html>

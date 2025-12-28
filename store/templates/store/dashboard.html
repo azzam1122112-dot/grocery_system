@@ -1,0 +1,549 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>لوحة التحكم - البقالة</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary: #10b981;
+            --primary-dark: #059669;
+            --primary-light: #d1fae5;
+            --secondary: #64748b;
+            --bg-body: #f1f5f9;
+            --bg-card: #ffffff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --info: #3b82f6;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            --radius: 0.75rem;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Cairo', sans-serif;
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            line-height: 1.5;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header */
+        .header {
+            background: var(--bg-card);
+            border-bottom: 1px solid var(--border);
+            padding: 0.75rem 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 800;
+            font-size: 1.25rem;
+            color: var(--primary-dark);
+        }
+
+        .brand-icon {
+            background: var(--primary-light);
+            color: var(--primary-dark);
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            font-size: 1.2rem;
+        }
+
+        .nav-actions {
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        .btn-nav {
+            text-decoration: none;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            background: #f8fafc;
+            border: 1px solid var(--border);
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .btn-nav:hover {
+            background: #e2e8f0;
+            color: var(--text-main);
+        }
+
+        .btn-nav.active {
+            background: var(--primary-light);
+            color: var(--primary-dark);
+            border-color: var(--primary-light);
+        }
+
+        /* Main Layout */
+        .main-container {
+            flex: 1;
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+            padding: 1.5rem;
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+        }
+
+        /* Filter Section */
+        .filter-card {
+            background: var(--bg-card);
+            border-radius: var(--radius);
+            padding: 1rem;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .filter-form {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .form-group {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .form-control {
+            padding: 0.5rem;
+            border: 1px solid var(--border);
+            border-radius: 0.5rem;
+            font-family: inherit;
+        }
+
+        .btn {
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            border: none;
+            cursor: pointer;
+            font-family: inherit;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-ghost {
+            background: transparent;
+            color: var(--text-muted);
+        }
+
+        /* Metrics Grid */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1rem;
+        }
+
+        .metric-card {
+            background: var(--bg-card);
+            border-radius: var(--radius);
+            padding: 1.25rem;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .metric-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 4px;
+            height: 100%;
+        }
+
+        .metric-card.total::after { background: var(--primary); }
+        .metric-card.cash::after { background: var(--info); }
+        .metric-card.transfer::after { background: var(--warning); }
+        .metric-card.debt::after { background: var(--danger); }
+        .metric-card.outstanding::after { background: #8b5cf6; }
+        .metric-card.profit::after { background: #10b981; }
+
+        .metric-label {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+        }
+
+        .metric-value {
+            font-size: 1.75rem;
+            font-weight: 800;
+            color: var(--text-main);
+        }
+
+        .metric-unit {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-muted);
+        }
+
+        /* Dashboard Grid */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .card {
+            background: var(--bg-card);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-md);
+            border: 1px solid var(--border);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card-header {
+            padding: 1rem 1.25rem;
+            border-bottom: 1px solid var(--border);
+            background: #f8fafc;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .card-title {
+            font-weight: 700;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .table-container {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.95rem;
+        }
+
+        th {
+            background: #f1f5f9;
+            padding: 0.75rem;
+            text-align: right;
+            font-weight: 600;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+
+        td {
+            padding: 0.75rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        .badge {
+            padding: 0.25rem 0.5rem;
+            border-radius: 1rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .badge-low { background: #fef3c7; color: #d97706; }
+        .badge-out { background: #fee2e2; color: #dc2626; }
+
+        .empty-state {
+            padding: 2rem;
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        /* Mobile Optimizations */
+        @media (max-width: 768px) {
+            .header {
+                padding: 0.75rem 1rem;
+            }
+            .brand span { display: none; }
+            .nav-actions span { display: none; }
+            
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .filter-card {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .filter-form {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .form-group {
+                flex-direction: column;
+                align-items: stretch;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="brand">
+            <div class="brand-icon">📊</div>
+            <span>لوحة التحكم</span>
+        </div>
+        <nav class="nav-actions">
+            <a href="{% url 'store:pos' %}" class="btn-nav">
+                <span>🛒</span> <span>نقطة البيع</span>
+            </a>
+            {% if request.user.is_superuser %}
+            <a href="{% url 'store:sales_list' %}" class="btn-nav">
+                <span>🧾</span> <span>الفواتير</span>
+            </a>
+            <a href="{% url 'store:inventory_list' %}" class="btn-nav">
+                <span>📦</span> <span>المخزون</span>
+            </a>
+            <a href="{% url 'store:debts_list' %}" class="btn-nav">
+                <span>📒</span> <span>الديون</span>
+            </a>
+            <a href="{% url 'store:employee_list' %}" class="btn-nav">
+                <span>👥</span> <span>الموظفين</span>
+            </a>
+            {% endif %}
+            <a href="{% url 'store:logout' %}" class="btn-nav" style="color: #ef4444; border-color: #fee2e2; background: #fef2f2;">
+                <span>🚪</span> <span>خروج</span>
+            </a>
+        </nav>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-container">
+        
+        <!-- Filters -->
+        <div class="filter-card">
+            <form method="get" class="filter-form">
+                <div class="form-group">
+                    <label>من:</label>
+                    <input type="date" name="start" value="{{ start_date }}" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label>إلى:</label>
+                    <input type="date" name="end" value="{{ end_date }}" class="form-control">
+                </div>
+                <button type="submit" class="btn btn-primary">تصفية</button>
+                <a href="{% url 'store:dashboard' %}" class="btn btn-ghost">إلغاء</a>
+            </form>
+            
+            {% if start_date or end_date %}
+            <div class="badge badge-low" style="background: var(--primary-light); color: var(--primary-dark);">
+                📅 فترة مخصصة
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Metrics -->
+        <div class="metrics-grid">
+            <div class="metric-card total">
+                <div class="metric-label">إجمالي المبيعات</div>
+                <div class="metric-value">
+                    {{ totals.total_amount|default:"0" }} <span class="metric-unit">ريال</span>
+                </div>
+            </div>
+            <div class="metric-card cash">
+                <div class="metric-label">مبيعات الكاش</div>
+                <div class="metric-value">
+                    {{ totals.total_cash|default:"0" }} <span class="metric-unit">ريال</span>
+                </div>
+            </div>
+            <div class="metric-card transfer">
+                <div class="metric-label">مبيعات الحوالة</div>
+                <div class="metric-value">
+                    {{ totals.total_transfer|default:"0" }} <span class="metric-unit">ريال</span>
+                </div>
+            </div>
+            <div class="metric-card debt">
+                <div class="metric-label">مبيعات الدين</div>
+                <div class="metric-value">
+                    {{ totals.total_debt|default:"0" }} <span class="metric-unit">ريال</span>
+                </div>
+            </div>
+            <div class="metric-card outstanding">
+                <div class="metric-label">مبالغ لم تحصل (ديون)</div>
+                <div class="metric-value">
+                    {{ totals.total_outstanding|default:"0" }} <span class="metric-unit">ريال</span>
+                </div>
+            </div>
+            <div class="metric-card profit">
+                <div class="metric-label">صافي الأرباح</div>
+                <div class="metric-value">
+                    {{ totals.total_profit|default:"0" }} <span class="metric-unit">ريال</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts / Tables Grid -->
+        <div class="dashboard-grid">
+            
+            <!-- Top Products -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">🔥 الأكثر مبيعاً</div>
+                </div>
+                <div class="table-container">
+                    {% if top_products %}
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>المنتج</th>
+                                <th>الكمية</th>
+                                <th>الإجمالي</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for p in top_products %}
+                            <tr>
+                                <td>{{ forloop.counter }}</td>
+                                <td>{{ p.product__name }}</td>
+                                <td>{{ p.total_qty }}</td>
+                                <td>{{ p.total_amount }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    {% else %}
+                    <div class="empty-state">لا توجد بيانات كافية</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Low Stock -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">⚠️ تنبيهات المخزون</div>
+                </div>
+                <div class="table-container">
+                    {% if low_stock_products or out_of_stock_products %}
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>المنتج</th>
+                                <th>المخزون</th>
+                                <th>الحالة</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for p in out_of_stock_products %}
+                            <tr>
+                                <td>{{ p.name }}</td>
+                                <td>0</td>
+                                <td><span class="badge badge-out">نفذت</span></td>
+                            </tr>
+                            {% endfor %}
+                            {% for p in low_stock_products %}
+                            <tr>
+                                <td>{{ p.name }}</td>
+                                <td>{{ p.current_stock }}</td>
+                                <td><span class="badge badge-low">منخفض</span></td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    {% else %}
+                    <div class="empty-state">المخزون في حالة جيدة ✅</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Least Selling -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">🧊 الأقل مبيعاً</div>
+                </div>
+                <div class="table-container">
+                    {% if low_products %}
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>المنتج</th>
+                                <th>الكمية</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for p in low_products %}
+                            <tr>
+                                <td>{{ forloop.counter }}</td>
+                                <td>{{ p.product__name }}</td>
+                                <td>{{ p.total_qty }}</td>
+                                <td>{{ p.total_amount }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    {% else %}
+                    <div class="empty-state">لا توجد بيانات كافية</div>
+                    {% endif %}
+                </div>
+            </div>
+
+        </div>
+
+    </main>
+
+</body>
+</html>

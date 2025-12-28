@@ -1,0 +1,17 @@
+{% extends 'store/base.html' %}
+
+{% block content %}
+<div class="form-container" style="max-width: 500px; text-align: center;">
+    <h2 class="form-title" style="color: #dc2626;">تأكيد الحذف</h2>
+    <p>هل أنت متأكد من رغبتك في حذف الموظف "{{ employee.username }}"؟</p>
+    <p style="color: #666; margin-bottom: 2rem;">لا يمكن التراجع عن هذا الإجراء.</p>
+    
+    <form method="post">
+        {% csrf_token %}
+        <div class="form-actions" style="justify-content: center;">
+            <button type="submit" class="btn-delete">نعم، احذف</button>
+            <a href="{% url 'store:employee_list' %}" class="btn-cancel">إلغاء</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

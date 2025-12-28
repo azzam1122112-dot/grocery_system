@@ -1,0 +1,242 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>تفاصيل الفاتورة #{{ sale.id }}</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary: #10b981;
+            --primary-dark: #059669;
+            --bg-body: #f1f5f9;
+            --bg-card: #ffffff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --radius: 0.75rem;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Cairo', sans-serif;
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            line-height: 1.5;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 2rem;
+        }
+
+        .invoice-card {
+            background: var(--bg-card);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border);
+            width: 100%;
+            max-width: 600px;
+            overflow: hidden;
+        }
+
+        .invoice-header {
+            background: #f8fafc;
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .invoice-title {
+            font-weight: 800;
+            font-size: 1.25rem;
+            color: var(--primary-dark);
+        }
+
+        .invoice-meta {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        .invoice-body {
+            padding: 1.5rem;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+            font-size: 0.95rem;
+        }
+
+        .info-label {
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        .info-value {
+            font-weight: 700;
+        }
+
+        .items-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1.5rem;
+            margin-bottom: 1.5rem;
+            font-size: 0.95rem;
+        }
+
+        .items-table th {
+            text-align: right;
+            padding: 0.75rem;
+            background: #f1f5f9;
+            border-bottom: 2px solid var(--border);
+            font-weight: 700;
+        }
+
+        .items-table td {
+            padding: 0.75rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .total-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 1rem;
+            border-top: 2px dashed var(--border);
+            font-size: 1.25rem;
+            font-weight: 800;
+            color: var(--primary-dark);
+        }
+
+        .actions {
+            padding: 1.5rem;
+            background: #f8fafc;
+            border-top: 1px solid var(--border);
+            text-align: center;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.6rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: 700;
+            text-decoration: none;
+            transition: all 0.2s;
+            font-family: inherit;
+            cursor: pointer;
+            border: 1px solid transparent;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .btn-secondary {
+            background: white;
+            border-color: var(--border);
+            color: var(--text-muted);
+        }
+
+        .btn:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+            .invoice-card {
+                box-shadow: none;
+                border: none;
+                max-width: 100%;
+            }
+            .actions {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="invoice-card">
+        <div class="invoice-header">
+            <div class="invoice-title">فاتورة مبيعات</div>
+            <div class="invoice-meta">#{{ sale.id }}</div>
+        </div>
+        
+        <div class="invoice-body">
+            <div class="info-row">
+                <span class="info-label">التاريخ:</span>
+                <span class="info-value">{{ sale.created_at|date:"Y-m-d H:i" }}</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">طريقة الدفع:</span>
+                <span class="info-value">{{ sale.get_payment_method_display }}</span>
+            </div>
+            {% if sale.debtor %}
+            <div class="info-row">
+                <span class="info-label">العميل:</span>
+                <span class="info-value">{{ sale.debtor.name }}</span>
+            </div>
+            {% endif %}
+            <div class="info-row">
+                <span class="info-label">المستخدم:</span>
+                <span class="info-value">{{ sale.created_by.first_name|default:sale.created_by.username|default:"-" }}</span>
+            </div>
+
+            <table class="items-table">
+                <thead>
+                    <tr>
+                        <th>المنتج</th>
+                        <th>الكمية</th>
+                        <th>السعر</th>
+                        <th>الإجمالي</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in sale.items.all %}
+                    <tr>
+                        <td>{{ item.product.name }}</td>
+                        <td>{{ item.quantity }}</td>
+                        <td>{{ item.unit_price }}</td>
+                        <td>{{ item.line_total }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            <div class="total-row">
+                <span>الإجمالي النهائي:</span>
+                <span>{{ sale.total_amount }} ريال</span>
+            </div>
+        </div>
+
+        <div class="actions">
+            <button onclick="window.print()" class="btn btn-primary">طباعة</button>
+            <a href="javascript:history.back()" class="btn btn-secondary">عودة</a>
+        </div>
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,58 @@
+{% extends 'store/base.html' %}
+
+{% block content %}
+<div class="header-actions">
+    <h1>إدارة الموظفين</h1>
+    <a href="{% url 'store:employee_create' %}" class="btn-add">
+        <span>+</span> إضافة موظف
+    </a>
+</div>
+
+<div class="card">
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>اسم المستخدم</th>
+                    <th>الاسم الكامل</th>
+                    <th>البريد الإلكتروني</th>
+                    <th>الصلاحية</th>
+                    <th>الحالة</th>
+                    <th>إجراءات</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for employee in employees %}
+                <tr>
+                    <td>{{ employee.username }}</td>
+                    <td>{{ employee.get_full_name }}</td>
+                    <td>{{ employee.email }}</td>
+                    <td>
+                        {% if employee.is_superuser %}
+                        <span class="badge" style="background: #e0e7ff; color: #3730a3;">مدير</span>
+                        {% else %}
+                        <span class="badge" style="background: #dcfce7; color: #166534;">كاشير</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if employee.is_active %}
+                        <span class="badge" style="background: #dcfce7; color: #166534;">نشط</span>
+                        {% else %}
+                        <span class="badge" style="background: #fee2e2; color: #991b1b;">موقوف</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <div class="actions">
+                            <a href="{% url 'store:employee_update' employee.pk %}" class="btn-edit">تعديل</a>
+                            {% if employee != request.user %}
+                            <a href="{% url 'store:employee_delete' employee.pk %}" class="btn-delete">حذف</a>
+                            {% endif %}
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

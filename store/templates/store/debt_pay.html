@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>سداد دين - {{ debtor.name }}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        body {
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            background-color: #f3f4f6;
+            margin: 0;
+            padding: 0;
+        }
+        .page {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 1.5rem 1.25rem 2rem;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.25rem;
+        }
+        .title {
+            font-size: 1.4rem;
+            font-weight: 700;
+        }
+        .nav-links a {
+            text-decoration: none;
+            font-size: 0.9rem;
+            color: #2563eb;
+            margin-right: 0.5rem;
+        }
+        .card {
+            background: #ffffff;
+            border-radius: 0.9rem;
+            padding: 1.1rem;
+            box-shadow: 0 10px 25px rgba(15, 23, 42, 0.08);
+            border: 1px solid #e5e7eb;
+            margin-bottom: 1rem;
+        }
+        .metrics {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+        }
+        .metric {
+            flex: 1 1 120px;
+            padding: 0.6rem 0.75rem;
+            border-radius: 0.75rem;
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+            font-size: 0.9rem;
+        }
+        .metric-label {
+            font-size: 0.8rem;
+            color: #6b7280;
+        }
+        .metric-value {
+            font-weight: 700;
+            margin-top: 0.15rem;
+        }
+        form .row {
+            margin-bottom: 0.75rem;
+        }
+        label {
+            display: block;
+            font-size: 0.85rem;
+            margin-bottom: 0.2rem;
+        }
+        .input {
+            width: 100%;
+            padding: 0.4rem 0.7rem;
+            border-radius: 0.6rem;
+            border: 1px solid #d1d5db;
+            font-size: 0.9rem;
+        }
+        .input:focus {
+            outline: none;
+            border-color: #0ea5e9;
+            box-shadow: 0 0 0 1px rgba(14, 165, 233, 0.35);
+        }
+        .radio-group {
+            display: flex;
+            gap: 1rem;
+            font-size: 0.9rem;
+        }
+        .btn {
+            border-radius: 999px;
+            border: none;
+            padding: 0.45rem 1.1rem;
+            font-size: 0.9rem;
+            cursor: pointer;
+            font-weight: 600;
+        }
+        .btn-primary {
+            background: linear-gradient(to left, #16a34a, #15803d);
+            color: #ffffff;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+            margin-top: 0.4rem;
+        }
+        th, td {
+            padding: 0.45rem 0.35rem;
+            border-bottom: 1px solid #e5e7eb;
+            text-align: right;
+        }
+        th {
+            background: #f9fafb;
+            font-weight: 600;
+        }
+        .empty-text {
+            font-size: 0.8rem;
+            color: #6b7280;
+            margin-top: 0.3rem;
+        }
+    </style>
+</head>
+<body>
+<div class="page">
+    <div class="header">
+        <div class="title">سداد دين - {{ debtor.name }}</div>
+        <div class="nav-links">
+            <a href="{% url 'store:debts_list' %}">رجوع لقائمة الديون</a>
+            <a href="{% url 'store:dashboard' %}">لوحة التحكم</a>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="metrics">
+            <div class="metric">
+                <div class="metric-label">إجمالي الدين</div>
+                <div class="metric-value">{{ totals.total_debt }} ريال</div>
+            </div>
+            <div class="metric">
+                <div class="metric-label">إجمالي المسدّد</div>
+                <div class="metric-value">{{ totals.total_paid }} ريال</div>
+            </div>
+            <div class="metric">
+                <div class="metric-label">المتبقي على المديون</div>
+                <div class="metric-value">{{ remaining }} ريال</div>
+            </div>
+        </div>
+
+        <form method="post">
+            {% csrf_token %}
+            <div class="row">
+                <label for="id_amount">مبلغ السداد</label>
+                {{ form.amount }}
+                {% if form.amount.errors %}
+                    <div class="empty-text">{{ form.amount.errors.0 }}</div>
+                {% endif %}
+            </div>
+
+            <div class="row">
+                <label>طريقة السداد</label>
+                <div class="radio-group">
+                    {{ form.payment_method }}
+                </div>
+                {% if form.payment_method.errors %}
+                    <div class="empty-text">{{ form.payment_method.errors.0 }}</div>
+                {% endif %}
+            </div>
+
+            <div class="row">
+                <label for="id_note">ملاحظة (اختياري)</label>
+                {{ form.note }}
+            </div>
+
+            <button type="submit" class="btn btn-primary">تسجيل سداد الدين</button>
+        </form>
+    </div>
+
+    <div class="card">
+        <h3 style="margin-top:0; font-size:1rem;">آخر عمليات السداد</h3>
+        {% if payments %}
+            <table>
+                <thead>
+                <tr>
+                    <th>التاريخ</th>
+                    <th>المبلغ</th>
+                    <th>طريقة السداد</th>
+                    <th>ملاحظة</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for p in payments %}
+                    <tr>
+                        <td>{{ p.paid_at|date:"Y-m-d H:i" }}</td>
+                        <td>{{ p.amount }} ريال</td>
+                        <td>{{ p.get_payment_method_display }}</td>
+                        <td>{{ p.note }}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <div class="empty-text">لا توجد عمليات سداد مسجّلة لهذا المديون حتى الآن.</div>
+        {% endif %}
+    </div>
+</div>
+</body>
+</html>

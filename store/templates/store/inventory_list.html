@@ -1,0 +1,420 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>إدارة المخزون - البقالة</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary: #10b981;
+            --primary-dark: #059669;
+            --primary-light: #d1fae5;
+            --secondary: #64748b;
+            --bg-body: #f1f5f9;
+            --bg-card: #ffffff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --info: #3b82f6;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            --radius: 0.75rem;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Cairo', sans-serif;
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            line-height: 1.5;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header */
+        .header {
+            background: var(--bg-card);
+            border-bottom: 1px solid var(--border);
+            padding: 0.75rem 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 800;
+            font-size: 1.25rem;
+            color: var(--primary-dark);
+        }
+
+        .brand-icon {
+            background: var(--primary-light);
+            color: var(--primary-dark);
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            font-size: 1.2rem;
+        }
+
+        .nav-actions {
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        .btn-nav {
+            text-decoration: none;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            background: #f8fafc;
+            border: 1px solid var(--border);
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .btn-nav:hover {
+            background: #e2e8f0;
+            color: var(--text-main);
+        }
+
+        /* Main Layout */
+        .main-container {
+            flex: 1;
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        /* Search Card */
+        .search-card {
+            background: var(--bg-card);
+            border-radius: var(--radius);
+            padding: 1rem;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border);
+        }
+
+        .search-form {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .search-input {
+            flex: 1;
+            padding: 0.75rem;
+            border: 1px solid var(--border);
+            border-radius: 0.5rem;
+            font-family: inherit;
+            font-size: 1rem;
+        }
+
+        .btn-search {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 0 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: inherit;
+        }
+
+        /* Table Card */
+        .card {
+            background: var(--bg-card);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-md);
+            border: 1px solid var(--border);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card-header {
+            padding: 1rem 1.25rem;
+            border-bottom: 1px solid var(--border);
+            background: #f8fafc;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .card-title {
+            font-weight: 700;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .table-container {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.95rem;
+        }
+
+        th {
+            background: #f1f5f9;
+            padding: 1rem;
+            text-align: right;
+            font-weight: 600;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            white-space: nowrap;
+        }
+
+        td {
+            padding: 1rem;
+            border-bottom: 1px solid var(--border);
+            vertical-align: middle;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tr:hover td {
+            background-color: #f8fafc;
+        }
+
+        /* Stock Controls */
+        .stock-control {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .qty-input {
+            width: 70px;
+            padding: 0.4rem;
+            border: 1px solid var(--border);
+            border-radius: 0.4rem;
+            text-align: center;
+            font-family: inherit;
+        }
+
+        .btn-action {
+            width: 32px;
+            height: 32px;
+            border-radius: 0.4rem;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 1.1rem;
+            transition: all 0.2s;
+        }
+
+        .btn-add {
+            background: var(--primary-light);
+            color: var(--primary-dark);
+        }
+        .btn-add:hover { background: var(--primary); color: white; }
+
+        .btn-sub {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+        .btn-sub:hover { background: #ef4444; color: white; }
+
+        .stock-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 999px;
+            font-weight: 700;
+            font-size: 0.9rem;
+        }
+
+        .stock-ok { background: var(--primary-light); color: var(--primary-dark); }
+        .stock-low { background: #fef3c7; color: #d97706; }
+        .stock-out { background: #fee2e2; color: #dc2626; }
+
+        /* Messages */
+        .messages {
+            margin-bottom: 1rem;
+        }
+        .alert {
+            padding: 1rem;
+            border-radius: var(--radius);
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+        .alert-success { background: var(--primary-light); color: var(--primary-dark); }
+        .alert-error { background: #fee2e2; color: #dc2626; }
+        .alert-warning { background: #fef3c7; color: #d97706; }
+
+        /* Mobile Optimizations */
+        @media (max-width: 768px) {
+            .header {
+                padding: 0.75rem 1rem;
+            }
+            .brand span { display: none; }
+            .nav-actions span { display: none; }
+            
+            .stock-control {
+                flex-wrap: wrap;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="brand">
+            <div class="brand-icon">📦</div>
+            <span>إدارة المخزون</span>
+        </div>
+        <nav class="nav-actions">
+            <a href="{% url 'store:pos' %}" class="btn-nav">
+                <span>🛒</span> <span>نقطة البيع</span>
+            </a>
+            {% if request.user.is_superuser %}
+            <a href="{% url 'store:dashboard' %}" class="btn-nav">
+                <span>📊</span> <span>لوحة التحكم</span>
+            </a>
+            <a href="{% url 'store:sales_list' %}" class="btn-nav">
+                <span>🧾</span> <span>الفواتير</span>
+            </a>
+            <a href="{% url 'store:debts_list' %}" class="btn-nav">
+                <span>📒</span> <span>الديون</span>
+            </a>
+            <a href="{% url 'store:employee_list' %}" class="btn-nav">
+                <span>👥</span> <span>الموظفين</span>
+            </a>
+            {% endif %}
+            <a href="{% url 'store:logout' %}" class="btn-nav" style="color: #ef4444; border-color: #fee2e2; background: #fef2f2;">
+                <span>🚪</span> <span>خروج</span>
+            </a>
+        </nav>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-container">
+        
+        {% if messages %}
+        <div class="messages">
+            {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">
+                {{ message }}
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <!-- Search & Actions -->
+        <div class="search-card" style="display: flex; justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap;">
+            <form method="get" class="search-form" style="flex: 1;">
+                <input type="text" name="q" value="{{ query }}" class="search-input" placeholder="ابحث عن منتج بالاسم أو الكود...">
+                <button type="submit" class="btn-search">بحث</button>
+            </form>
+            <a href="{% url 'store:product_create' %}" class="btn-search" style="text-decoration: none; background: var(--primary-dark);">+ إضافة منتج</a>
+        </div>
+
+        <!-- Inventory Table -->
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">📦 قائمة المنتجات</div>
+                <div style="color: var(--text-muted); font-size: 0.9rem;">
+                    عدد المنتجات: {{ products|length }}
+                </div>
+            </div>
+            
+            <div class="table-container">
+                {% if products %}
+                <table>
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>الكود</th>
+                            <th>المنتج</th>
+                            <th>التكلفة</th>
+                            <th>سعر البيع</th>
+                            <th>المخزون</th>
+                            <th>تحديث المخزون</th>
+                            <th>إجراءات</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for p in products %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td><span style="font-family: monospace; background: #f1f5f9; padding: 2px 6px; border-radius: 4px;">{{ p.code }}</span></td>
+                            <td style="font-weight: 600;">{{ p.name }}</td>
+                            <td>{{ p.cost_price }}</td>
+                            <td>{{ p.sale_price }}</td>
+                            <td>
+                                {% if p.current_stock == 0 %}
+                                <span class="stock-badge stock-out">نفذت (0)</span>
+                                {% elif p.current_stock < 5 %}
+                                <span class="stock-badge stock-low">{{ p.current_stock }}</span>
+                                {% else %}
+                                <span class="stock-badge stock-ok">{{ p.current_stock }}</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <form method="post" action="{% url 'store:inventory_update' p.id %}" class="stock-control">
+                                    {% csrf_token %}
+                                    <input type="number" name="quantity" value="1" min="1" class="qty-input">
+                                    <button type="submit" name="action" value="add" class="btn-action btn-add" title="إضافة">+</button>
+                                    <button type="submit" name="action" value="subtract" class="btn-action btn-sub" title="خصم">-</button>
+                                </form>
+                            </td>
+                            <td>
+                                <div style="display: flex; gap: 0.5rem;">
+                                    <a href="{% url 'store:product_update' p.id %}" class="btn-action" style="background: var(--info); color: white; text-decoration: none;" title="تعديل">✎</a>
+                                    <a href="{% url 'store:product_delete' p.id %}" class="btn-action" style="background: var(--danger); color: white; text-decoration: none;" title="حذف">🗑️</a>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% else %}
+                <div class="empty-state">
+                    <p>لا توجد منتجات مطابقة للبحث.</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+    </main>
+
+</body>
+</html>
