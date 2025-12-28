@@ -7,11 +7,16 @@ from pathlib import Path
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# Take environment variables from .env file
+
+# Determine which environment file to use
+ENV_FILE = '.env'
+if os.environ.get('DJANGO_ENV') == 'development':
+    ENV_FILE = '.env.dev'
+
 env = environ.Env(
     DEBUG=(bool, False)
 )
-environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
+environ.Env.read_env(os.path.join(BASE_DIR, ENV_FILE))
 
 
 # Quick-start development settings - unsuitable for production
