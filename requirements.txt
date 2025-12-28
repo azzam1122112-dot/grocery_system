@@ -1,4 +1,5 @@
 gunicorn
 psycopg2-binary
 django-environ
+whitenoise
 Django>=4.2,<5
