@@ -43,6 +43,7 @@
             min-height: 100vh;
             display: flex;
             flex-direction: column;
+            overflow-x: hidden;
         }
 
         /* Header */
@@ -183,6 +184,24 @@
             font-size: 1rem;
             font-family: inherit;
             transition: border-color 0.2s;
+        }
+
+        /* Forms used by this page (forms.py uses class="input") */
+        .input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 2px solid var(--border);
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            font-family: inherit;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            background: var(--bg-card);
+        }
+
+        .input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px var(--primary-light);
         }
 
         .form-control:focus {
@@ -368,10 +387,12 @@
         /* Mobile Optimizations */
         @media (max-width: 640px) {
             .header {
-                padding: 0.75rem 0.75rem;
+                padding: calc(0.75rem + env(safe-area-inset-top)) 0.75rem 0.75rem;
                 flex-wrap: wrap;
                 gap: 0.5rem;
             }
+            .brand { min-width: 0; }
+            .brand-icon { width: 36px; height: 36px; font-size: 1.05rem; }
             .brand span {
                 display: inline;
                 font-size: 1rem;
@@ -386,13 +407,25 @@
                 overflow-x: auto;
                 -webkit-overflow-scrolling: touch;
                 padding-bottom: 0.25rem;
+                scrollbar-width: none;
+                scroll-snap-type: x proximity;
             }
+            .nav-actions::-webkit-scrollbar { display: none; }
             .btn-nav {
                 flex: 0 0 auto;
                 min-height: 44px;
-                padding: 0.5rem 0.75rem;
+                min-width: 44px;
+                padding: 0.5rem;
+                border-radius: 0.75rem;
+                scroll-snap-align: start;
             }
             .btn-nav span:last-child { display: none; } /* Hide label, keep icon */
+
+            .main-container { padding: 0.75rem; }
+            .card-header { padding: 0.875rem 1rem; }
+            .card-body { padding: 1rem; }
+            .form-label { font-size: 0.85rem; }
+            .input, .form-control { font-size: 16px; }
             
             .form-row {
                 grid-template-columns: minmax(0, 1fr) 90px 48px;
